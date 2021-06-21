@@ -36,7 +36,7 @@ You can publish the config file with:
 php artisan vendor:publish --provider="HFarm\Excludable\ExcludableServiceProvider" --tag="excludable-config"
 ```
 
-This is the contents of the published config file:
+This is the content of the published config file:
 
 ```php
 return [
