@@ -1,6 +1,6 @@
 <?php
 
-namespace HFarm\Excludable;
+namespace Maize\Excludable;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

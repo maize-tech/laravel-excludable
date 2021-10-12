@@ -1,17 +1,17 @@
 {
-    "name": "h-farm/laravel-excludable",
+    "name": "maize-tech/laravel-excludable",
     "description": "Laravel Excludable",
     "keywords": [
-        "h-farm",
+        "maize-tech",
         "laravel-excludable"
     ],
-    "homepage": "https://github.com/h-farm/laravel-excludable",
+    "homepage": "https://github.com/maize-tech/laravel-excludable",
     "license": "MIT",
     "authors": [
         {
             "name": "Enrico De Lazzari",
             "email": "enrico.delazzari@h-farm.com",
-            "homepage": "https://h-farm.com",
+            "homepage": "https://innovation.h-farm.com",
             "role": "Developer"
         }
     ],
@@ -31,13 +31,13 @@
     },
     "autoload": {
         "psr-4": {
-            "HFarm\\Excludable\\": "src",
-            "HFarm\\Excludable\\Database\\Factories\\": "database/factories"
+            "Maize\\Excludable\\": "src",
+            "Maize\\Excludable\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "HFarm\\Excludable\\Tests\\": "tests"
+            "Maize\\Excludable\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -52,7 +52,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "HFarm\\Excludable\\ExcludableServiceProvider"
+                "Maize\\Excludable\\ExcludableServiceProvider"
             ]
         }
     },

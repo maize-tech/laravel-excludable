@@ -1,9 +1,9 @@
 <?php
 
-namespace HFarm\Excludable\Database\Factories;
+namespace Maize\Excludable\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use HFarm\Excludable\Tests\Models\Article;
+use Maize\Excludable\Tests\Models\Article;
 
 class ArticleFactory extends Factory
 {

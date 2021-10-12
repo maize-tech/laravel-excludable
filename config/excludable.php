@@ -11,5 +11,5 @@ return [
     |
     */
 
-    'exclusion_model' => HFarm\Excludable\Models\Exclusion::class,
+    'exclusion_model' => Maize\Excludable\Models\Exclusion::class,
 ];

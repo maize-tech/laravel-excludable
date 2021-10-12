@@ -1,11 +1,11 @@
 <?php
 
-namespace HFarm\Excludable\Tests\Models;
+namespace Maize\Excludable\Tests\Models;
 
-use HFarm\Excludable\Excludable;
-use HFarm\Excludable\Tests\Events\ArticleExcludedEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Maize\Excludable\Excludable;
+use Maize\Excludable\Tests\Events\ArticleExcludedEvent;
 
 class Article extends Model
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace HFarm\Excludable;
+namespace Maize\Excludable;
 
-use HFarm\Excludable\Scopes\ExclusionScope;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Maize\Excludable\Scopes\ExclusionScope;
 
 trait Excludable
 {

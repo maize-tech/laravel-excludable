@@ -1,8 +1,8 @@
 <?php
 
-namespace HFarm\Excludable\Tests\Events;
+namespace Maize\Excludable\Tests\Events;
 
-use HFarm\Excludable\Tests\Models\Article;
+use Maize\Excludable\Tests\Models\Article;
 
 class ArticleExcludedEvent
 {

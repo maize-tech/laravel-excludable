@@ -1,6 +1,6 @@
 <?php
 
-namespace HFarm\Excludable\Scopes;
+namespace Maize\Excludable\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

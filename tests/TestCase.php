@@ -1,9 +1,9 @@
 <?php
 
-namespace HFarm\Excludable\Tests;
+namespace Maize\Excludable\Tests;
 
-use HFarm\Excludable\ExcludableServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Maize\Excludable\ExcludableServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -13,7 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'HFarm\\Excludable\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Maize\\Excludable\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 

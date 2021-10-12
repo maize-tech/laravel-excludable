@@ -2,10 +2,10 @@
 
 # Laravel Excludable
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/h-farm/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/h-farm/laravel-excludable)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/h-farm/laravel-excludable/run-tests?label=tests)](https://github.com/h-farm/laravel-excludable/actions?query=workflow%3Arun-tests+branch%3Amaster)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/h-farm/laravel-excludable/Check%20&%20fix%20styling?label=code%20style)](https://github.com/h-farm/laravel-excludable/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
-[![Total Downloads](https://img.shields.io/packagist/dt/h-farm/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/h-farm/laravel-excludable)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/maize-tech/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/maize-tech/laravel-excludable)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/maize-tech/laravel-excludable/run-tests?label=tests)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3Arun-tests+branch%3Amaster)
+[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/maize-tech/laravel-excludable/Check%20&%20fix%20styling?label=code%20style)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
+[![Total Downloads](https://img.shields.io/packagist/dt/maize-tech/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/maize-tech/laravel-excludable)
 
 Easily exclude model entities from eloquent queries. 
 
@@ -21,19 +21,19 @@ You can find an example in the [Usage](#usage) section.
 You can install the package via composer:
 
 ```bash
-composer require h-farm/laravel-excludable
+composer require maize-tech/laravel-excludable
 ```
 
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --provider="HFarm\Excludable\ExcludableServiceProvider" --tag="excludable-migrations"
+php artisan vendor:publish --provider="Maize\Excludable\ExcludableServiceProvider" --tag="excludable-migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="HFarm\Excludable\ExcludableServiceProvider" --tag="excludable-config"
+php artisan vendor:publish --provider="Maize\Excludable\ExcludableServiceProvider" --tag="excludable-config"
 ```
 
 This is the content of the published config file:
@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'exclusion_model' => HFarm\Excludable\Models\Exclusion::class,
+    'exclusion_model' => Maize\Excludable\Models\Exclusion::class,
 ];
 
 ```
@@ -59,7 +59,7 @@ return [
 
 ### Basic
 
-To use the package, add the `HFarm\Excludable\Excludable` trait to all models you want to make excludable.
+To use the package, add the `Maize\Excludable\Excludable` trait to all models you want to make excludable.
 
 Here's an example model including the `Excludable` trait:
 
@@ -68,7 +68,7 @@ Here's an example model including the `Excludable` trait:
 
 namespace App\Models;
 
-use HFarm\Excludable\Excludable;
+use Maize\Excludable\Excludable;
 
 class Article extends Model
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace HFarm\Excludable\Tests;
+namespace Maize\Excludable\Tests;
 
-use HFarm\Excludable\Models\Exclusion;
-use HFarm\Excludable\Tests\Events\ArticleExcludedEvent;
-use HFarm\Excludable\Tests\Models\Article;
 use Illuminate\Support\Facades\Event;
+use Maize\Excludable\Models\Exclusion;
+use Maize\Excludable\Tests\Events\ArticleExcludedEvent;
+use Maize\Excludable\Tests\Models\Article;
 
 class ExclusionTest extends TestCase
 {
