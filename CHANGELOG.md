@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-excludable` will be documented in this file.
 
+## 3.1.0 - 2023-02-13
+
+### What's Changed
+
+- Add support to Laravel 10.x
+
 ## 3.0.0 - 2022-02-16
 
 - add laravel 9 support
