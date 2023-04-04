@@ -9,7 +9,7 @@
 
 Easily exclude model entities from eloquent queries. 
 
-This package allows you to define a subset of model entities who should be excluded from eloquent queries.
+This package allows you to define a subset of model entities that should be excluded from eloquent queries.
 You will be able to override the default `Exclusion` model and its associated migration, so you can eventually restrict the exclusion context by defining the entity that should effectively exclude the subset. 
 
 An example usage could be an application with a multi tenant scenario and a set of global entities.
