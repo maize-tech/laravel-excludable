@@ -3,8 +3,8 @@
 # Laravel Excludable
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/maize-tech/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/maize-tech/laravel-excludable)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/maize-tech/laravel-excludable/run-tests?label=tests)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3Arun-tests+branch%3Amaster)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/maize-tech/laravel-excludable/Check%20&%20fix%20styling?label=code%20style)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/maize-tech/laravel-excludable/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/maize-tech/laravel-excludable/php-cs-fixer.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/maize-tech/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/maize-tech/laravel-excludable)
 
 Easily exclude model entities from eloquent queries. 
