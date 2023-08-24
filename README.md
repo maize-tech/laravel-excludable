@@ -97,7 +97,6 @@ $article = Article::query()->findOrFail(1)
 $article->addToExclusion();
 
 $article->excluded(); // returns true
-
 ```
 
 That's all!
@@ -109,6 +108,34 @@ use App\Models\Article;
 
 Article::findOrFail(1); // throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 ```
+
+### Exclude all model entities
+
+To exclude all entities of a specific model you can use the `excludeAllModels` method:
+
+``` php
+use App\Models\Article;
+
+Article::excludeAllModels();
+
+Article::query()->count(); // returns 0
+```
+
+The given method will create an Exclusion entity with a wildcard, which means all newly created entities will be excluded too.
+
+### Include all model entities
+
+To re-include all entities of a specific model you can use the `includeAllModels` method: 
+
+``` php
+use App\Models\Article;
+
+Article::includeAllModels()
+
+Article::query()->count(); // returns 0
+```
+
+The given method will delete all Exclusion entities related to the Article model.
 
 ### Include excluded entities
 

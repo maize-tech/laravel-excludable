@@ -76,6 +76,43 @@ class ExclusionTest extends TestCase
     }
 
     /** @test */
+    public function it_can_include_all_models()
+    {
+        $articles = Article::factory(5)->create();
+
+        $articles[0]->addToExclusion();
+        $articles[1]->addToExclusion();
+
+        $this->assertDatabaseCount($this->exclusionsTable, 2);
+        $this->assertCount(3, Article::all());
+
+        Article::includeAllModels();
+
+        $this->assertDatabaseCount($this->exclusionsTable, 0);
+        $this->assertCount(5, Article::all());
+    }
+
+    /** @test */
+    public function it_can_exclude_all_models()
+    {
+        $articles = Article::factory(5)->create();
+
+        $articles[0]->addToExclusion();
+
+        $this->assertCount(4, Article::all());
+        $this->assertDatabaseCount($this->exclusionsTable, 1);
+
+        Article::excludeAllModels();
+
+        $this->assertCount(0, Article::all());
+        $this->assertDatabaseCount($this->exclusionsTable, 1);
+        $this->assertDatabaseHas($this->exclusionsTable, [
+            'excludable_type' => Article::class,
+            'excludable_id' => '*',
+        ]);
+    }
+
+    /** @test */
     public function it_can_list_all_models_with_exclusions()
     {
         $articles = Article::factory(5)->create();

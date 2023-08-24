@@ -3,18 +3,28 @@
 namespace Maize\Excludable;
 
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\DB;
 use Maize\Excludable\Scopes\ExclusionScope;
+use Maize\Excludable\Support\Config;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withExcluded(bool $withExcluded = true)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withoutExcluded()
+ * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyExcluded()
+ */
 trait Excludable
 {
-    public static function bootExcludable()
+    public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
     }
 
     public function exclusion(): MorphOne
     {
-        return $this->morphOne(config('excludable.exclusion_model'), 'excludable');
+        return $this->morphOne(
+            related: Config::getExclusionModel(),
+            name: 'excludable'
+        );
     }
 
     public function excluded(): bool
@@ -45,5 +55,30 @@ trait Excludable
         $this->exclusion()->delete();
 
         return true;
+    }
+
+    public static function excludeAllModels(): void
+    {
+        DB::transaction(function () {
+            Config::getExclusionModel()
+                ->query()
+                ->where('excludable_type', app(static::class)->getMorphClass())
+                ->delete();
+
+            Config::getExclusionModel()
+                ->query()
+                ->create([
+                    'excludable_type' => app(static::class)->getMorphClass(),
+                    'excludable_id' => '*',
+                ]);
+        });
+    }
+
+    public static function includeAllModels(): void
+    {
+        Config::getExclusionModel()
+            ->query()
+            ->where('excludable_type', app(static::class)->getMorphClass())
+            ->delete();
     }
 }
