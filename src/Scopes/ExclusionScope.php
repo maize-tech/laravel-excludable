@@ -5,7 +5,7 @@ namespace Maize\Excludable\Scopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Maize\Excludable\Support\Config;
 
 class ExclusionScope implements Scope
@@ -32,12 +32,12 @@ class ExclusionScope implements Scope
 
             return $builder
                 ->whereExists(
-                    callback: fn (\Illuminate\Database\Query\Builder $query) => $query
-                        ->select(DB::raw(1))
+                    callback: fn (QueryBuilder $query) => $query
+                        ->selectRaw(1)
                         ->from($exclusionModel->getTable())
                         ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
                         ->where(
-                            fn (\Illuminate\Database\Query\Builder $query) => $query
+                            fn (QueryBuilder $query) => $query
                                 ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName())
                                 ->orWhere($exclusionModel->qualifyColumn('excludable_id'), '*')
                         ),

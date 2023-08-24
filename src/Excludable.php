@@ -11,6 +11,8 @@ use Maize\Excludable\Support\Config;
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withExcluded(bool $withExcluded = true)
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withoutExcluded()
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyExcluded()
+ * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder whereHasExclusion(bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder whereDoesntHaveExclusion()
  */
 trait Excludable
 {
