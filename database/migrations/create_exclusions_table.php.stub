@@ -10,7 +10,9 @@ class CreateExclusionsTable extends Migration
     {
         Schema::create('exclusions', function (Blueprint $table) {
             $table->id();
-            $table->morphs('excludable');
+            $table->string('excludable_type');
+            $table->string('excludable_id');
+            $table->index(["excludable_type", "excludable_id"]);
             $table->timestamps();
         });
     }
