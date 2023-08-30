@@ -2,8 +2,10 @@
 
 namespace Maize\Excludable;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\DB;
+use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Scopes\ExclusionScope;
 use Maize\Excludable\Support\Config;
 
@@ -23,10 +25,12 @@ trait Excludable
 
     public function exclusion(): MorphOne
     {
-        return $this->morphOne(
-            related: Config::getExclusionModel(),
-            name: 'excludable'
-        );
+        return $this
+            ->morphOne(
+                related: Config::getExclusionModel(),
+                name: 'excludable'
+            )
+            ->where('type', Exclusion::TYPE_EXCLUDE);
     }
 
     public function excluded(): bool
@@ -41,6 +45,7 @@ trait Excludable
         }
 
         $exclusion = $this->exclusion()->firstOrCreate([
+            'type' => Exclusion::TYPE_EXCLUDE,
             'excludable_type' => $this->getMorphClass(),
             'excludable_id' => $this->getKey(),
         ]);
@@ -59,20 +64,37 @@ trait Excludable
         return true;
     }
 
-    public static function excludeAllModels(): void
+    public static function excludeAllModels(array|Model $exceptions = []): void
     {
-        DB::transaction(function () {
-            Config::getExclusionModel()
+        $exceptions = collect($exceptions)
+            ->map(fn (mixed $exception) => match (true) {
+                is_a($exception, Model::class) => $exception->getKey(),
+                default => $exception,
+            });
+
+        DB::transaction(function () use ($exceptions) {
+            $exclusionModel = Config::getExclusionModel();
+
+            $exclusionModel
                 ->query()
                 ->where('excludable_type', app(static::class)->getMorphClass())
                 ->delete();
 
-            Config::getExclusionModel()
+            $exclusionModel
                 ->query()
                 ->create([
+                    'type' => Exclusion::TYPE_EXCLUDE,
                     'excludable_type' => app(static::class)->getMorphClass(),
                     'excludable_id' => '*',
                 ]);
+
+            $exceptions->each(
+                fn (mixed $exception) => $exclusionModel->query()->create([
+                    'type' => Exclusion::TYPE_INCLUDE,
+                    'excludable_type' => app(static::class)->getMorphClass(),
+                    'excludable_id' => $exception,
+                ])
+            );
         });
     }
 
