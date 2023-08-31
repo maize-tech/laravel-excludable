@@ -3,11 +3,12 @@
 namespace Maize\Excludable;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\DB;
 use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Scopes\ExclusionScope;
 use Maize\Excludable\Support\Config;
+use Maize\Excludable\Support\HasMorphOneWildcard;
+use Maize\Excludable\Support\MorphOneWildcard;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withExcluded(bool $withExcluded = true)
@@ -18,15 +19,17 @@ use Maize\Excludable\Support\Config;
  */
 trait Excludable
 {
+    use HasMorphOneWildcard;
+
     public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
     }
 
-    public function exclusion(): MorphOne
+    public function exclusion(): MorphOneWildcard
     {
         return $this
-            ->morphOne(
+            ->morphOneWildcard(
                 related: Config::getExclusionModel(),
                 name: 'excludable'
             )

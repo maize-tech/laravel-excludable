@@ -197,4 +197,18 @@ class ExclusionTest extends TestCase
 
         Event::assertDispatched(ArticleExcludedEvent::class);
     }
+
+    /** @test */
+    public function it_can_retrieve_exclusion_relation()
+    {
+        $article = Article::factory()->create();
+
+        $article->addToExclusion();
+
+        $this->assertCount(1, $article->exclusion()->get());
+
+        Article::excludeAllModels();
+
+        $this->assertCount(1, $article->exclusion()->get());
+    }
 }
