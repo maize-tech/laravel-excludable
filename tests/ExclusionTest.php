@@ -113,6 +113,38 @@ class ExclusionTest extends TestCase
     }
 
     /** @test */
+    public function it_can_exclude_all_models_with_exception()
+    {
+        $articles = Article::factory(5)->create();
+
+        Article::excludeAllModels([
+            $articles[0],
+            $articles[1],
+        ]);
+
+        $this->assertCount(2, Article::all());
+        $this->assertDatabaseHas($this->exclusionsTable, [
+            'type' => Exclusion::TYPE_EXCLUDE,
+            'excludable_type' => Article::class,
+            'excludable_id' => '*',
+        ]);
+        $this->assertDatabaseHas($this->exclusionsTable, [
+            'type' => Exclusion::TYPE_INCLUDE,
+            'excludable_type' => Article::class,
+            'excludable_id' => $articles[0]->getKey(),
+        ]);
+        $this->assertDatabaseHas($this->exclusionsTable, [
+            'type' => Exclusion::TYPE_INCLUDE,
+            'excludable_type' => Article::class,
+            'excludable_id' => $articles[1]->getKey(),
+        ]);
+
+        $this->assertCount(5, Article::withExcluded()->get());
+        $this->assertCount(2, Article::withoutExcluded()->get());
+        $this->assertCount(3, Article::onlyExcluded()->get());
+    }
+
+    /** @test */
     public function it_can_list_all_models_with_exclusions()
     {
         $articles = Article::factory(5)->create();

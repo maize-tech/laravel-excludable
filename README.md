@@ -123,6 +123,26 @@ Article::query()->count(); // returns 0
 
 The given method will create an Exclusion entity with a wildcard, which means all newly created entities will be excluded too.
 
+You can also provide a subset of entities which should not be excluded:
+
+``` php
+use App\Models\Article;
+
+$article = Article::query()->find(1);
+
+Article::excludeAllModels($article); // passing a model entity
+
+Article::query()->count(); // returns 1
+```
+
+``` php
+use App\Models\Article;
+
+Article::excludeAllModels([1,2,3]); // passing the model keys
+
+Article::query()->count(); // returns 3
+```
+
 ### Include all model entities
 
 To re-include all entities of a specific model you can use the `includeAllModels` method: 

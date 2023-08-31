@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
+use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Support\Config;
 
 class ExclusionScope implements Scope
@@ -33,8 +35,9 @@ class ExclusionScope implements Scope
             return $builder
                 ->whereExists(
                     callback: fn (QueryBuilder $query) => $query
-                        ->selectRaw(1)
+                        ->select(DB::raw(1))
                         ->from($exclusionModel->getTable())
+                        ->where('type', Exclusion::TYPE_EXCLUDE)
                         ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
                         ->where(
                             fn (QueryBuilder $query) => $query
@@ -42,6 +45,17 @@ class ExclusionScope implements Scope
                                 ->orWhere($exclusionModel->qualifyColumn('excludable_id'), '*')
                         ),
                     not: $not
+                )
+                ->whereIn(
+                    column: $model->getQualifiedKeyName(),
+                    values: fn (QueryBuilder $query) => $query
+                        ->select($exclusionModel->qualifyColumn('excludable_id'))
+                        ->from($exclusionModel->getTable())
+                        ->where('type', Exclusion::TYPE_INCLUDE)
+                        ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
+                        ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName()),
+                    boolean: $not ? 'or' : 'and',
+                    not: ! $not
                 );
         });
     }
