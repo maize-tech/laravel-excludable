@@ -3,10 +3,9 @@
 namespace Maize\Excludable\Support;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Query\JoinClause;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class MorphOneWildcard extends MorphOne
+class MorphManyWildcard extends MorphMany
 {
     protected function getKeys(array $models, $key = null): array
     {
@@ -15,23 +14,23 @@ class MorphOneWildcard extends MorphOne
             ->toArray();
     }
 
-    public function addOneOfManyJoinSubQueryConstraints(JoinClause $join): void
+    public function one(): MorphOneWildcard
     {
-        $join
-            ->on($this->qualifySubSelectColumn($this->morphType), '=', $this->qualifyRelatedColumn($this->morphType))
-            ->where(
-                fn (Builder $query) => $query
-                    ->whereColumn($this->qualifySubSelectColumn($this->foreignKey), $this->qualifyRelatedColumn($this->foreignKey))
-                    ->orWhere($this->qualifySubSelectColumn($this->foreignKey), '*')
-            );
+        return MorphOneWildcard::noConstraints(fn () => new MorphOneWildcard(
+            $this->getQuery(),
+            $this->getParent(),
+            $this->morphType,
+            $this->foreignKey,
+            $this->localKey
+        ));
     }
 
     public function addConstraints(): void
     {
         if (static::$constraints) {
-            $query = $this->getRelationQuery();
-
-            $query
+            $this
+                ->getRelationQuery()
+                ->where($this->morphType, $this->morphClass)
                 ->whereNotNull($this->foreignKey)
                 ->where(
                     fn (Builder $query) => $query

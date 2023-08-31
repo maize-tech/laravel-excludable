@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Scopes\ExclusionScope;
 use Maize\Excludable\Support\Config;
-use Maize\Excludable\Support\HasMorphOneWildcard;
+use Maize\Excludable\Support\HasWildcardRelationships;
+use Maize\Excludable\Support\MorphManyWildcard;
 use Maize\Excludable\Support\MorphOneWildcard;
 
 /**
@@ -19,26 +20,33 @@ use Maize\Excludable\Support\MorphOneWildcard;
  */
 trait Excludable
 {
-    use HasMorphOneWildcard;
+    use HasWildcardRelationships;
 
     public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
     }
 
+    public function exclusions(): MorphManyWildcard
+    {
+        return $this
+            ->morphManyWildcard(
+                related: Config::getExclusionModel(),
+                name: 'excludable'
+            );
+    }
+
     public function exclusion(): MorphOneWildcard
     {
         return $this
-            ->morphOneWildcard(
-                related: Config::getExclusionModel(),
-                name: 'excludable'
-            )
-            ->where('type', Exclusion::TYPE_EXCLUDE);
+            ->exclusions()
+            ->where('type', Exclusion::TYPE_EXCLUDE)
+            ->one();
     }
 
     public function excluded(): bool
     {
-        return $this->exclusion()->exists();
+        return $this->exclusions()->count() === 1;
     }
 
     public function addToExclusion(): bool
