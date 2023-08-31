@@ -9,8 +9,8 @@ use Maize\Excludable\Tests\Events\ArticleExcludedEvent;
 
 class Article extends Model
 {
-    use HasFactory;
     use Excludable;
+    use HasFactory;
 
     protected $dispatchesEvents = [
         'excluded' => ArticleExcludedEvent::class,
