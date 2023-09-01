@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Facades\DB;
 use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Support\Config;
 
@@ -32,31 +31,24 @@ class ExclusionScope implements Scope
             $model = $builder->getModel();
             $exclusionModel = Config::getExclusionModel();
 
-            return $builder
-                ->whereExists(
-                    callback: fn (QueryBuilder $query) => $query
-                        ->select(DB::raw(1))
-                        ->from($exclusionModel->getTable())
-                        ->where('type', Exclusion::TYPE_EXCLUDE)
-                        ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
-                        ->where(
-                            fn (QueryBuilder $query) => $query
-                                ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName())
-                                ->orWhere($exclusionModel->qualifyColumn('excludable_id'), '*')
-                        ),
-                    not: $not
-                )
-                ->whereIn(
-                    column: $model->getQualifiedKeyName(),
-                    values: fn (QueryBuilder $query) => $query
-                        ->select($exclusionModel->qualifyColumn('excludable_id'))
-                        ->from($exclusionModel->getTable())
-                        ->where('type', Exclusion::TYPE_INCLUDE)
-                        ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
-                        ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName()),
-                    boolean: $not ? 'or' : 'and',
-                    not: ! $not
-                );
+            return $builder->where(
+                fn (Builder $query) => $query
+                    ->whereHas(
+                        relation: 'exclusion',
+                        operator: $not ? '<' : '>='
+                    )
+                    ->whereIn(
+                        column: $model->getQualifiedKeyName(),
+                        values: fn (QueryBuilder $query) => $query
+                            ->select($exclusionModel->qualifyColumn('excludable_id'))
+                            ->from($exclusionModel->getTable())
+                            ->where($exclusionModel->qualifyColumn('type'), Exclusion::TYPE_INCLUDE)
+                            ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
+                            ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName()),
+                        boolean: $not ? 'or' : 'and',
+                        not: ! $not
+                    )
+            );
         });
     }
 

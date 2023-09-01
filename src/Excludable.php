@@ -3,11 +3,13 @@
 namespace Maize\Excludable;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\DB;
 use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Scopes\ExclusionScope;
 use Maize\Excludable\Support\Config;
+use Maize\Excludable\Support\HasWildcardRelationships;
+use Maize\Excludable\Support\MorphManyWildcard;
+use Maize\Excludable\Support\MorphOneWildcard;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withExcluded(bool $withExcluded = true)
@@ -18,24 +20,33 @@ use Maize\Excludable\Support\Config;
  */
 trait Excludable
 {
+    use HasWildcardRelationships;
+
     public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
     }
 
-    public function exclusion(): MorphOne
+    public function exclusions(): MorphManyWildcard
     {
         return $this
-            ->morphOne(
+            ->morphManyWildcard(
                 related: Config::getExclusionModel(),
                 name: 'excludable'
-            )
-            ->where('type', Exclusion::TYPE_EXCLUDE);
+            );
+    }
+
+    public function exclusion(): MorphOneWildcard
+    {
+        return $this
+            ->exclusions()
+            ->where('type', Exclusion::TYPE_EXCLUDE)
+            ->one();
     }
 
     public function excluded(): bool
     {
-        return $this->exclusion()->exists();
+        return $this->exclusions()->count() === 1;
     }
 
     public function addToExclusion(): bool
