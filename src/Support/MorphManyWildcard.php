@@ -34,7 +34,7 @@ class MorphManyWildcard extends MorphMany
                 ->whereNotNull($this->foreignKey)
                 ->where(
                     fn (Builder $query) => $query
-                        ->whereColumn($this->foreignKey, $this->getParentKey())
+                        ->where($this->foreignKey, $this->getParentKey())
                         ->orWhere($this->foreignKey, '*')
                 );
         }
