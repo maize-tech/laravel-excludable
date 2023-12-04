@@ -104,6 +104,8 @@ class ExclusionTest extends TestCase
 
         Article::excludeAllModels();
 
+        $articles->first()->addToExclusion();
+
         $this->assertCount(0, Article::all());
         $this->assertDatabaseCount($this->exclusionsTable, 1);
         $this->assertDatabaseHas($this->exclusionsTable, [
