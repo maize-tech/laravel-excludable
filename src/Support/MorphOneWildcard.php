@@ -35,7 +35,7 @@ class MorphOneWildcard extends MorphOne
                 ->whereNotNull($this->foreignKey)
                 ->where(
                     fn (Builder $query) => $query
-                        ->where($this->foreignKey, $this->getParentKey())
+                        ->where($this->foreignKey, (string) $this->getParentKey())
                         ->orWhere($this->foreignKey, '*')
                 );
         }

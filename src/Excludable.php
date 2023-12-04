@@ -51,6 +51,10 @@ trait Excludable
 
     public function addToExclusion(): bool
     {
+        if ($this->excluded()) {
+            return true;
+        }
+
         if ($this->fireModelEvent('excluding') === false) {
             return false;
         }
