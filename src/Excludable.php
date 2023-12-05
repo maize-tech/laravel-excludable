@@ -61,6 +61,10 @@ trait Excludable
     public function addToExclusion(): bool
     {
         return DB::transaction(function () {
+            if ($this->fireModelEvent('excluding') === false) {
+                return false;
+            }
+
             $this->exclusions()->where([
                 'type' => Exclusion::TYPE_INCLUDE,
                 'excludable_type' => $this->getMorphClass(),
@@ -69,10 +73,6 @@ trait Excludable
 
             if ($this->excluded()) {
                 return true;
-            }
-
-            if ($this->fireModelEvent('excluding') === false) {
-                return false;
             }
 
             $exclusion = $this->exclusion()->firstOrCreate([
