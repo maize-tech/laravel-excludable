@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasWildcardRelationships
 {
-    public function morphOneWildcard(string|Model $related, string $name, string $type = null, string $id = null, string $localKey = null): MorphOneWildcard
+    public function morphOneWildcard(string|Model $related, string $name, ?string $type = null, ?string $id = null, ?string $localKey = null): MorphOneWildcard
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -25,7 +25,7 @@ trait HasWildcardRelationships
         return new MorphOneWildcard($query, $parent, $type, $id, $localKey);
     }
 
-    public function morphManyWildcard(string|Model $related, string $name, string $type = null, string $id = null, string $localKey = null): MorphManyWildcard
+    public function morphManyWildcard(string|Model $related, string $name, ?string $type = null, ?string $id = null, ?string $localKey = null): MorphManyWildcard
     {
         $instance = $this->newRelatedInstance($related);
 
