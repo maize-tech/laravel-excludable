@@ -12,4 +12,12 @@ return [
     */
 
     'exclusion_model' => Maize\Excludable\Models\Exclusion::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Has exclusion query
+    |--------------------------------------------------------------------------
+    */
+
+    'has_exclusion_query' => Maize\Excludable\Queries\HasExclusionQuery::class,
 ];
