@@ -49,7 +49,7 @@ trait Excludable
         return $this->exclusions()->count() === 1;
     }
 
-    public static function areAllExcluded(): bool
+    public static function hasExclusionWildcard(): bool
     {
         return Config::getExclusionModel()
             ->query()
@@ -100,8 +100,8 @@ trait Excludable
                 ->where('excludable_id', '!=', '*')
                 ->delete();
 
-            if (! static::areAllExcluded()) {
-                return false;
+            if (! static::hasExclusionWildcard()) {
+                return true;
             }
 
             Config::getExclusionModel()->create([
