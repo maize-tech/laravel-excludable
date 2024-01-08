@@ -9,15 +9,6 @@ use Maize\Excludable\Tests\Models\Article;
 
 class ExclusionTest extends TestCase
 {
-    private string $exclusionsTable;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->exclusionsTable = (new Exclusion())->getTable();
-    }
-
     /** @test */
     public function it_can_add_model_to_exclusions()
     {
@@ -114,10 +105,10 @@ class ExclusionTest extends TestCase
         ]);
 
         $this
-            ->assertQueryCount(2, Article::query())
             ->assertExcludableHasWildcard(model: Article::class, data: ['type' => Exclusion::TYPE_EXCLUDE])
             ->assertExcludableHas(model: $articles[0], data: ['type' => Exclusion::TYPE_INCLUDE])
             ->assertExcludableHas(model: $articles[1], data: ['type' => Exclusion::TYPE_INCLUDE])
+            ->assertQueryCount(2, Article::query())
             ->assertQueryCount(5, Article::withExcluded())
             ->assertQueryCount(2, Article::withoutExcluded())
             ->assertQueryCount(3, Article::onlyExcluded());
