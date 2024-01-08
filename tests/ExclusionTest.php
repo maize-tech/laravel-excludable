@@ -15,7 +15,7 @@ class ExclusionTest extends TestCase
     {
         parent::setUp();
 
-        $this->exclusionsTable = (new Exclusion)->getTable();
+        $this->exclusionsTable = (new Exclusion())->getTable();
     }
 
     /** @test */
@@ -45,7 +45,7 @@ class ExclusionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_remove_model_form_exclusions()
+    public function it_can_remove_model_from_exclusions()
     {
         $articles = Article::factory(5)->create();
 
@@ -212,5 +212,55 @@ class ExclusionTest extends TestCase
         Article::excludeAllModels();
 
         $this->assertCount(1, $article->exclusion()->get());
+    }
+
+    /** @test */
+    public function it_can_remove_model_with_exclusions()
+    {
+        $articles = Article::factory(5)->create();
+
+        // 0 exclude
+        $this->assertModelsCount(exclusions: 0, articles: 5);
+
+        $articles[0]->addToExclusion();
+        $articles[1]->addToExclusion();
+
+        // 2 exclude
+        $this->assertModelsCount(exclusions: 2, articles: 5);
+
+        $articles[1]->delete();
+
+        // 1 exclude
+        $this->assertModelsCount(exclusions: 1, articles: 4);
+
+        $articles[0]->delete();
+
+        // 0 exclude
+        $this->assertModelsCount(exclusions: 0, articles: 3);
+
+        Article::excludeAllModels();
+
+        // 1 exclude wildcard
+        $this->assertModelsCount(exclusions: 1, articles: 3);
+
+        $articles[2]->delete();
+
+        // 1 exclude wildcard
+        $this->assertModelsCount(exclusions: 1, articles: 2);
+
+        $articles[3]->removeFromExclusion();
+
+        // 1 exclude wildcard + 1 include
+        $this->assertModelsCount(exclusions: 2, articles: 2);
+
+        $articles[3]->delete();
+
+        // 1 exclude wildcard
+        $this->assertModelsCount(exclusions: 1, articles: 1);
+
+        $articles[4]->delete();
+
+        // 1 exclude wildcard
+        $this->assertModelsCount(exclusions: 1, articles: 0);
     }
 }

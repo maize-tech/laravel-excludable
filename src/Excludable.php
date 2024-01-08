@@ -25,6 +25,13 @@ trait Excludable
     public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
+
+        static::deleting(
+            fn (Model $model) => Config::getExclusionModel()->where([
+                'excludable_type' => $model->getMorphClass(),
+                'excludable_id' => $model->getKey(),
+            ])->delete()
+        );
     }
 
     public function exclusions(): MorphManyWildcard
