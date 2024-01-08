@@ -2,6 +2,7 @@
 
 namespace Maize\Excludable\Tests;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Maize\Excludable\ExcludableServiceProvider;
 use Maize\Excludable\Models\Exclusion;
@@ -52,5 +53,36 @@ class TestCase extends Orchestra
         return $this
             ->assertModelCount(Exclusion::class, $exclusions)
             ->assertModelCount(Article::class, $articles);
+    }
+
+    public function assertExcludableHas(Article $model, array $data = [])
+    {
+        return $this->assertDatabaseHas((new Exclusion())->getTable(), array_merge([
+            'excludable_type' => $model->getMorphClass(),
+            'excludable_id' => $model->getKey(),
+        ], $data));
+    }
+
+    public function assertExcludableHasWildcard(string $model, array $data = [])
+    {
+        return $this->assertDatabaseHas((new Exclusion())->getTable(), array_merge([
+            'excludable_type' => $model,
+            'excludable_id' => '*',
+        ], $data));
+    }
+
+    public function assertExcludableMissing(Article $model)
+    {
+        return $this->assertDatabaseMissing((new Exclusion())->getTable(), [
+            'excludable_type' => $model->getMorphClass(),
+            'excludable_id' => $model->getKey(),
+        ]);
+    }
+
+    public function assertQueryCount(int $count, Builder $query)
+    {
+        $this->assertCount($count, $query->get());
+
+        return $this;
     }
 }

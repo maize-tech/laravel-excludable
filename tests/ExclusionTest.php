@@ -23,25 +23,19 @@ class ExclusionTest extends TestCase
     {
         $articles = Article::factory(5)->create();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 0);
+        $this->assertModelsCount(exclusions: 0, articles: 5);
 
         $articles[0]->addToExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 1);
-
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[0]->id,
-        ]);
+        $this
+            ->assertModelsCount(exclusions: 1, articles: 5)
+            ->assertExcludableHas(model: $articles[0]);
 
         $articles[1]->addToExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 2);
-
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[1]->id,
-        ]);
+        $this
+            ->assertModelsCount(exclusions: 2, articles: 5)
+            ->assertExcludableHas(model: $articles[1]);
     }
 
     /** @test */
@@ -49,30 +43,24 @@ class ExclusionTest extends TestCase
     {
         $articles = Article::factory(5)->create();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 0);
+        $this->assertModelsCount(exclusions: 0, articles: 5);
 
         $articles[0]->addToExclusion();
         $articles[1]->addToExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 2);
+        $this->assertModelsCount(exclusions: 2, articles: 5);
 
         $articles[1]->removeFromExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 1);
-
-        $this->assertDatabaseMissing($this->exclusionsTable, [
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[1]->id,
-        ]);
+        $this
+            ->assertModelsCount(exclusions: 1, articles: 5)
+            ->assertExcludableMissing(model: $articles[1]);
 
         $articles[0]->removeFromExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 0);
-
-        $this->assertDatabaseMissing($this->exclusionsTable, [
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[0]->id,
-        ]);
+        $this
+            ->assertModelsCount(exclusions: 0, articles: 5)
+            ->assertExcludableMissing(model: $articles[0]);
     }
 
     /** @test */
@@ -83,13 +71,15 @@ class ExclusionTest extends TestCase
         $articles[0]->addToExclusion();
         $articles[1]->addToExclusion();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 2);
-        $this->assertCount(3, Article::all());
+        $this
+            ->assertModelsCount(exclusions: 2, articles: 5)
+            ->assertCount(3, Article::all());
 
         Article::includeAllModels();
 
-        $this->assertDatabaseCount($this->exclusionsTable, 0);
-        $this->assertCount(5, Article::all());
+        $this
+            ->assertModelsCount(exclusions: 0, articles: 5)
+            ->assertQueryCount(5, Article::query());
     }
 
     /** @test */
@@ -99,19 +89,18 @@ class ExclusionTest extends TestCase
 
         $articles[0]->addToExclusion();
 
-        $this->assertCount(4, Article::all());
-        $this->assertDatabaseCount($this->exclusionsTable, 1);
+        $this
+            ->assertModelsCount(exclusions: 1, articles: 5)
+            ->assertQueryCount(4, Article::query());
 
         Article::excludeAllModels();
 
         $articles->first()->addToExclusion();
 
-        $this->assertCount(0, Article::all());
-        $this->assertDatabaseCount($this->exclusionsTable, 1);
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'excludable_type' => Article::class,
-            'excludable_id' => '*',
-        ]);
+        $this
+            ->assertModelsCount(exclusions: 1, articles: 5)
+            ->assertExcludableHasWildcard(model: Article::class)
+            ->assertQueryCount(0, Article::query());
     }
 
     /** @test */
@@ -124,26 +113,14 @@ class ExclusionTest extends TestCase
             $articles[1],
         ]);
 
-        $this->assertCount(2, Article::all());
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'type' => Exclusion::TYPE_EXCLUDE,
-            'excludable_type' => Article::class,
-            'excludable_id' => '*',
-        ]);
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'type' => Exclusion::TYPE_INCLUDE,
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[0]->getKey(),
-        ]);
-        $this->assertDatabaseHas($this->exclusionsTable, [
-            'type' => Exclusion::TYPE_INCLUDE,
-            'excludable_type' => Article::class,
-            'excludable_id' => $articles[1]->getKey(),
-        ]);
-
-        $this->assertCount(5, Article::withExcluded()->get());
-        $this->assertCount(2, Article::withoutExcluded()->get());
-        $this->assertCount(3, Article::onlyExcluded()->get());
+        $this
+            ->assertQueryCount(2, Article::query())
+            ->assertExcludableHasWildcard(model: Article::class, data: ['type' => Exclusion::TYPE_EXCLUDE])
+            ->assertExcludableHas(model: $articles[0], data: ['type' => Exclusion::TYPE_INCLUDE])
+            ->assertExcludableHas(model: $articles[1], data: ['type' => Exclusion::TYPE_INCLUDE])
+            ->assertQueryCount(5, Article::withExcluded())
+            ->assertQueryCount(2, Article::withoutExcluded())
+            ->assertQueryCount(3, Article::onlyExcluded());
     }
 
     /** @test */
@@ -153,7 +130,7 @@ class ExclusionTest extends TestCase
 
         $articles->first()->addToExclusion();
 
-        $this->assertCount(5, Article::withExcluded()->get());
+        $this->assertQueryCount(5, Article::withExcluded());
     }
 
     /** @test */
@@ -163,9 +140,9 @@ class ExclusionTest extends TestCase
 
         $articles->first()->addToExclusion();
 
-        $this->assertCount(4, Article::withoutExcluded()->get());
+        $this->assertQueryCount(4, Article::withoutExcluded());
 
-        $this->assertCount(4, Article::withExcluded(false)->get());
+        $this->assertQueryCount(4, Article::withExcluded(false));
     }
 
     /** @test */
@@ -175,7 +152,7 @@ class ExclusionTest extends TestCase
 
         $articles->first()->addToExclusion();
 
-        $this->assertCount(1, Article::onlyExcluded()->get());
+        $this->assertQueryCount(1, Article::onlyExcluded());
     }
 
     /** @test */
