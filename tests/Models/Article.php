@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Maize\Excludable\Excludable;
 use Maize\Excludable\Tests\Events\ArticleExcludedEvent;
+use Maize\Excludable\Tests\Events\ArticleExcludingEvent;
 
 class Article extends Model
 {
@@ -13,6 +14,7 @@ class Article extends Model
     use HasFactory;
 
     protected $dispatchesEvents = [
+        'excluding' => ArticleExcludingEvent::class,
         'excluded' => ArticleExcludedEvent::class,
     ];
 }
