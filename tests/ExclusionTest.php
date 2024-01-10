@@ -391,13 +391,30 @@ class ExclusionTest extends TestCase
     }
 
     /** @test */
-    public function it_should_fire_excludsion_event()
+    public function it_should_fire_exclusion_event()
     {
         Event::fake();
 
-        $article = Article::factory()->create();
+        $articles = Article::factory(5)->create();
 
-        $article->addToExclusion();
+        $articles[0]->addToExclusion();
+
+        Event::assertDispatched(ArticleExcludingEvent::class);
+        Event::assertDispatched(ArticleExcludedEvent::class);
+    }
+
+    /** @test */
+    public function it_should_fire_exclusion_event_with_wildcard()
+    {
+        Event::fake();
+
+        $articles = Article::factory(5)->create();
+
+        Article::excludeAllModels([
+            $articles[0],
+        ]);
+
+        $articles[0]->addToExclusion();
 
         Event::assertDispatched(ArticleExcludingEvent::class);
         Event::assertDispatched(ArticleExcludedEvent::class);

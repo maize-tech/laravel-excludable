@@ -72,11 +72,15 @@ trait Excludable
                 return false;
             }
 
-            $this->exclusions()->where([
+            $wasRecentlyDeleted = (bool) $this->exclusions()->where([
                 'type' => Exclusion::TYPE_INCLUDE,
                 'excludable_type' => $this->getMorphClass(),
                 'excludable_id' => $this->getKey(),
             ])->delete();
+
+            if ($wasRecentlyDeleted) {
+                $this->fireModelEvent('excluded', false);
+            }
 
             if ($this->excluded()) {
                 return true;
