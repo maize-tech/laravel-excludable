@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-excludable` will be documented in this file.
 
+## 4.0.0 - 2024-01-10
+
+### What's Changed
+
+* Added exclusion wildcards
+* Added exclusion exceptions
+
 ## 3.1.0 - 2023-02-13
 
 ### What's Changed
