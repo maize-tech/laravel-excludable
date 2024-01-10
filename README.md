@@ -13,10 +13,10 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/maize-tech/laravel-excludable/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/maize-tech/laravel-excludable/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/maize-tech/laravel-excludable.svg?style=flat-square)](https://packagist.org/packages/maize-tech/laravel-excludable)
 
-Easily exclude model entities from eloquent queries. 
+Easily exclude model entities from eloquent queries.
 
 This package allows you to define a subset of model entities that should be excluded from eloquent queries.
-You will be able to override the default `Exclusion` model and its associated migration, so you can eventually restrict the exclusion context by defining the entity that should effectively exclude the subset. 
+You will be able to override the default `Exclusion` model and its associated migration, so you can eventually restrict the exclusion context by defining the entity that should effectively exclude the subset.
 
 An example usage could be an application with a multi tenant scenario and a set of global entities.
 While those entities should be accessible by all tenants, some of them might want to hide a subset of those entities for their users.
@@ -57,6 +57,17 @@ return [
     */
 
     'exclusion_model' => Maize\Excludable\Models\Exclusion::class,
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Has exclusion query
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the fully qualified class name of the exclusion query.
+    |
+    */
+
+    'has_exclusion_query' => Maize\Excludable\Queries\HasExclusionQuery::class,
 ];
 
 ```
@@ -143,14 +154,24 @@ Article::excludeAllModels([1,2,3]); // passing the model keys
 Article::query()->count(); // returns 3
 ```
 
-### Include all model entities
-
-To re-include all entities of a specific model you can use the `includeAllModels` method: 
+To check whether a specific model has a wildcard or not you can use the `hasExclusionWildcard` method:
 
 ``` php
 use App\Models\Article;
 
-Article::includeAllModels()
+Article::excludeAllModels();
+
+$hasWildcard = Article::hasExclusionWildcard(); // returns true
+```
+
+### Include all model entities
+
+To re-include all entities of a specific model you can use the `includeAllModels` method:
+
+``` php
+use App\Models\Article;
+
+Article::includeAllModels();
 
 Article::query()->count(); // returns 0
 ```
@@ -180,7 +201,7 @@ The package automatically throws two separate events when excluding an entity:
 - `excluding` which is thrown before the entity is actually excluded.
   This could be useful, for example, with an observer which listens to this event and does some sort of 'validation' to the related entity.
   If the given validation does not succeed, you can just return `false`, and the entity will not be excluded;
-- `excluded` which is thrown right after the entity has been marked as excluded. 
+- `excluded` which is thrown right after the entity has been marked as excluded.
 
 ## Testing
 
