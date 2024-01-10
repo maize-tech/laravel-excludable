@@ -25,6 +25,13 @@ trait Excludable
     public static function bootExcludable(): void
     {
         static::addGlobalScope(new ExclusionScope);
+
+        static::deleting(
+            fn (Model $model) => Config::getExclusionModel()->where([
+                'excludable_type' => $model->getMorphClass(),
+                'excludable_id' => $model->getKey(),
+            ])->delete()
+        );
     }
 
     public function exclusions(): MorphManyWildcard
@@ -49,34 +56,73 @@ trait Excludable
         return $this->exclusions()->count() === 1;
     }
 
+    public static function hasExclusionWildcard(): bool
+    {
+        return Config::getExclusionModel()
+            ->query()
+            ->where('excludable_type', app(static::class)->getMorphClass())
+            ->where('excludable_id', '*')
+            ->exists();
+    }
+
     public function addToExclusion(): bool
     {
-        if ($this->excluded()) {
+        return DB::transaction(function () {
+            if ($this->fireModelEvent('excluding') === false) {
+                return false;
+            }
+
+            $wasRecentlyDeleted = (bool) $this->exclusions()->where([
+                'type' => Exclusion::TYPE_INCLUDE,
+                'excludable_type' => $this->getMorphClass(),
+                'excludable_id' => $this->getKey(),
+            ])->delete();
+
+            if ($wasRecentlyDeleted) {
+                $this->fireModelEvent('excluded', false);
+            }
+
+            if ($this->excluded()) {
+                return true;
+            }
+
+            $exclusion = $this->exclusion()->firstOrCreate([
+                'type' => Exclusion::TYPE_EXCLUDE,
+                'excludable_type' => $this->getMorphClass(),
+                'excludable_id' => $this->getKey(),
+            ]);
+
+            if ($exclusion->wasRecentlyCreated) {
+                $this->fireModelEvent('excluded', false);
+            }
+
             return true;
-        }
-
-        if ($this->fireModelEvent('excluding') === false) {
-            return false;
-        }
-
-        $exclusion = $this->exclusion()->firstOrCreate([
-            'type' => Exclusion::TYPE_EXCLUDE,
-            'excludable_type' => $this->getMorphClass(),
-            'excludable_id' => $this->getKey(),
-        ]);
-
-        if ($exclusion->wasRecentlyCreated) {
-            $this->fireModelEvent('excluded', false);
-        }
-
-        return true;
+        });
     }
 
     public function removeFromExclusion(): bool
     {
-        $this->exclusion()->delete();
+        return DB::transaction(function () {
+            if (! $this->excluded()) {
+                return false;
+            }
 
-        return true;
+            $this->exclusion()
+                ->where('excludable_id', '!=', '*')
+                ->delete();
+
+            if (! static::hasExclusionWildcard()) {
+                return true;
+            }
+
+            Config::getExclusionModel()->create([
+                'type' => Exclusion::TYPE_INCLUDE,
+                'excludable_type' => $this->getMorphClass(),
+                'excludable_id' => $this->getKey(),
+            ]);
+
+            return true;
+        });
     }
 
     public static function excludeAllModels(array|Model $exceptions = []): void

@@ -5,8 +5,6 @@ namespace Maize\Excludable\Scopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Database\Query\Builder as QueryBuilder;
-use Maize\Excludable\Models\Exclusion;
 use Maize\Excludable\Support\Config;
 
 class ExclusionScope implements Scope
@@ -28,26 +26,8 @@ class ExclusionScope implements Scope
     protected function addWhereHasExclusion(Builder $builder): void
     {
         $builder->macro('whereHasExclusion', function (Builder $builder, $not = false) {
-            $model = $builder->getModel();
-            $exclusionModel = Config::getExclusionModel();
-
             return $builder->where(
-                fn (Builder $query) => $query
-                    ->whereHas(
-                        relation: 'exclusion',
-                        operator: $not ? '<' : '>='
-                    )
-                    ->whereIn(
-                        column: $model->getQualifiedKeyName(),
-                        values: fn (QueryBuilder $query) => $query
-                            ->select($exclusionModel->qualifyColumn('excludable_id'))
-                            ->from($exclusionModel->getTable())
-                            ->where($exclusionModel->qualifyColumn('type'), Exclusion::TYPE_INCLUDE)
-                            ->where($exclusionModel->qualifyColumn('excludable_type'), $model->getMorphClass())
-                            ->whereColumn($exclusionModel->qualifyColumn('excludable_id'), $model->getQualifiedKeyName()),
-                        boolean: $not ? 'or' : 'and',
-                        not: ! $not
-                    )
+                fn (Builder $query) => Config::getHasExclusionQuery()($query, $not)
             );
         });
     }
