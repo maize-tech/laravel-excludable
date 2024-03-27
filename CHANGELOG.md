@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-excludable` will be documented in this file.
 
+## 4.1.0 - 2024-03-27
+
+### What's Changed
+
+* Laravel 11.x Compatibility by @enricodelazzari in https://github.com/maize-tech/laravel-excludable/pull/30
+
 ## 4.0.0 - 2024-01-10
 
 ### What's Changed
